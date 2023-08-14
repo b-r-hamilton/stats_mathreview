@@ -50,15 +50,15 @@ Oftentimes there can be many ways to describe a sample space, for the same proce
 
 We refer to a \textbf{event} as some subset of the sample space.
 
-We assign probability to our events, with a probability between 0 (not gonna happen!) and 1 (absolutely gonna happen!). We will use the notation that $\mathbf{P}(A)$ is the probability that event $A$ occurs. 
+We assign probability to our events, with a probability between 0 (not gonna happen!) and 1 (absolutely gonna happen!). We will use the notation that $\mathbf{P}(A)$ is the probability that event $A$ occurs. Much of probability theory will surround the analysis of the probability of two or more events. We will use the notation $A \cap B$ to indicate the \textbf{intersection} of two events $A$ and $B$ (both events occurred) and the notation $A \cup B$ to indicate the \textbf{union} of two events $A$ and $B$ (one or two of the events occurred). 
 
-Some axioms of probability are... 
+Some axioms of probability are...
 \begin{enumerate}
-\item\label{item:2} nonnegativity
-\item normalization (probability of entire sample space = 1)
+\item\label{item:2} nonnegativity (all probabilities $> 1$) 
+\item normalization (sum of probability of all events in sample space $= 1$)
 \item additivity
-
-If two events do not intersect
+  
+If two events do not intersect (i.e., are \textbf{independent})
 \begin{equation}
 \label{eq:3}
 A \cap B = 0 %don't overlap
@@ -66,12 +66,12 @@ A \cap B = 0 %don't overlap
 Then the union of the two events is equal to the sum of their independent probabilites
 \begin{equation}
 \label{eq:2}
-P(A \cup B) = P(A) + P(B) %add up
+\mathbf{P}(A \cup B) = \mathbf{P}(A) + \mathbf{P}(B) %add up
 %this implies that probability <= 1 
 \end{equation}
 \end{enumerate}
 
-When defining a sample space, we want the events of the sample space to have the following characteristics 
+Some general guidelines for defining a sample space are that events should be... 
 \begin{enumerate}
 \item\label{item:1} mutually exclusive
 \item collectively exhaustive 
@@ -79,10 +79,12 @@ When defining a sample space, we want the events of the sample space to have the
 
 For a sample space, we will define a ``probability law'', which tells us how probability is distributed in the sample space. We can use probability laws to analyze a random variable. These can come from physics or data.
 
-If you take a probability class, you'll spend hours playing around with these statistics. I'm going to focus on some applications of conditional probability, because I think that's one of the more relevant avenues of probability theory. Conditional probability is how we incorporate our prior knowledge of a situation into our estimate of probability. 
+Although it's good practice to attempt to define your sample space so that events are mutually exclusive, that's not always how reality works. For instance, consider a question like, ``Will it rain today in Albuquerque, considering that ENSO is in a positive phase?'' These two events are not mutually exclusive, and we know they will have some relation to each other (i.e., rain is more likely in Albuquerque during an El Nino). 
+
+An important aspect of probability theory for the sciences is the concept of conditional probability, which helps inform our probability estimates based upon events that already occurred. 
 
 \subsection{Conditional Probability}
-We define the notation $\mathbf{P}(A|B)$ as the probability of A, given that B occurred.
+We define the notation $\mathbf{P}(A|B)$ as the probability of A, given that B occurred. $A$ and $B$ do not need to be \textbf{mutually exclusive}. 
 \begin{equation}
 \label{eq:6}
 \mathbf{P}(A|B) = \frac{\mathbf{P}(A \cap B)}{\mathbf{P}(B)}
@@ -116,30 +118,36 @@ we would find that $\mathbf{P}(\text{tails}|\text{raining}) = \mathbf{P}(\text{t
 \subsubsection{Example: False Alarms}
 See the attached .ipynb with a Julia example of this situation
 
-Imagine we have a piece of equipment that detects whales. We know that for our region of study, there are whales there 5\% of the time.
+Imagine we have a piece of equipment that detects whales. We suspect that, for our region of study, there are whales there 5\% of the time. Furthermore, our equipment will detect the whale 99\% of the time \textbf{if there is a whale there} (if we miss a whale: Type II error, false negative). It will detect a whale 10\% of the time \textbf{if there is no whale there} (if we detect a whale: Type I error, false positive).
+
 \begin{equation}
 \label{eq:8}
 \mathbf{P} = 
 \begin{cases}
-  0.95 & \text{no whale} \\
-  0.05 & \text{whale}
+  0.95 & \text{no whale} \begin{cases}
+                              0.9 & \text{no detection} \\
+                              0.1 & \text{detection} 
+                              \end{cases} \\
+  0.05 & \text{whale} \begin{cases}
+                              0.01 & \text{no detection} \\
+                              0.99 & \text{detection} 
+                              \end{cases}
  \end{cases}
 \end{equation}
 
-Furthermore, our equipment will detect the whale 99\% of the time \textbf{if there is a whale there} (if we miss a whale: Type II error, false negative). It will detect a whale 10\% of the time \textbf{if there is no whale there} (if we detect a whale: Type I error, false positive).
-
 If we get a detection signal, what's the probability that it's actually a whale?
-Hint: calculate
+Hint: calculate the joint probability 
 \begin{equation}
 \label{eq:10}
 \mathbf{P}(\text{whale} | \text{detection}) = \frac{\mathbf{P} (\text{whale} \cap \text{detection})}{\mathbf{P}(\text{detection})}
 \end{equation}
+
 % answer: P (whale \cap detection) = P(whale) * P(detection | whale) = 0.05 * 0.99
 % answer: P(detection) = 0.05 * 0.99 + 0.95 * 0.1
 % answer: P(whale | detection) = 0.34
 
 \subsubsection{Bayes Theorem/Law/Rule}
-This example helps show the power of what's called Bayes Theorem/Law/Rule (depending on who you ask - and there's a lot of strong opinions about it!). We can use it to incorporate prior information into our analysis. Specifically, Bayes' theorem is  used to incorporate prior knowledge about the situation into the estimate of the probability of an event, $A_i$. A formal definition of it is given in Equation \ref{eq:9}. 
+This example helps show the power of what's called Bayes Theorem/Law/Rule (depending on who you ask - and there's a lot of strong opinions about it!). We can use it to incorporate prior information into our analysis. Specifically, Bayes' theorem is  used to incorporate prior knowledge about the situation into the estimate of the probability of an event, $A_i$. A formal definition of it is given in Equation \ref{eq:9}, which can be derived by substituting Equation \ref{eq:11} into Equation \ref{eq:6}. 
 \begin{equation}
 \label{eq:9}
 \text{Bayes' Theorem: }\mathbf{P} (A_i|B) ==\frac{\mathbf{P}(A_i)\mathbf{P}(B|A_i)}{\mathbf{P}(B)}
@@ -149,13 +157,15 @@ There is a whole field of analysis surrounding this fundamental idea called \tex
 
 \section{Statistics}
 \subsection{Probability Density Functions}
-Statistics is what we we use whenever we want to think about analyzing and making decisions about a dataset. In statistics, we'll be working with \textbf{probability density functions} (PDFs) and \textbf{cumulative distribution functions.}. Although we think about PDFS more often, it can be easier to think about the CDF first.
+Statistics is what we we use whenever we want to think about analyzing and making decisions about a dataset. In statistics, we'll be working with \textbf{probability density functions} (PDFs) and \textbf{cumulative distribution functions.}.
+\begin{itemize}
 
-We will define a CDF with a capital $P$, and it will be defined for the random variable $x$ as $P_x()$. CDFs are defined such that $P_x(X)$ is the probability that $x \leq X$. At $-\infty$, the CDF is 0, and at $+\infty$, the CDF is 1. You can interpret the CDF as the probability that a value is equal to or less than $X$. It is the integral of all the probabilities up to that point. 
+\item \textbf{PDF}: $p(X)$ maps from some value in a sample space $X$ to a likelihood, $p$. Similarly to our previous definition of the sample space, the PDF must be normalized so that its sum is 1. You can intepret the PDF as as the probability that the value $X$ occurs. 
 
-We will define a PDF with a lowercase $p$ and will be defined similarly to the CDF, $p_x()$. The PDF is the derivative of the CDF and is normalized so that its integral over all $X$ is 1. You can interpret the CDF of as the probability of $X$ occurring. 
+\item \textbf{CDF}: $P_{x}(X)$ is defined for the random variable $X$ such that $P_x(X)$ is the probability that $x \leq X$. At $X = -\infty$, the CDF is 0, and at $X = +\infty$, the CDF is 1. You can interpret the CDF as the probability that a value is equal to or less than $X$. It is the integral of the PDF $p(X)$ up to that point, and the PDF is the derivative of the CDF.
+  \end{itemize}
 
-An example of the PDF and CDF are shown in Figure \ref{fig:pdfvcdf} for the Normal distribution.
+  An example of the PDF and CDF are shown in Figure \ref{fig:pdfvcdf} for the Normal distribution (PDF of the normal distribution is shown in Equation \ref{eq:13}).
 
 \begin{figure}[htbp]
 \centerline{\includegraphics[width = 0.75\textwidth]{pdfvcdf.png}}
@@ -189,16 +199,16 @@ In Table \ref{table:1}, I show the mathematical definitions for mean and varianc
   \label{table:1}
 \end{table}
 
-We also will frequently talk about \textbf{standard deviation, which is the square root of variance}, and another measure of the spread of a distribution.
+We also will frequently talk about \textbf{standard deviation, which is the square root of variance}, and another measure of the spread of a distribution. The standard deviation is useful because it has the same units as the measurement. Whenever someone says that a value estimated from a distribution is $a \pm b$, usually $a$ refers to some type of mean, and $b$ refers to some type of standard deviation. 
 
 One further question we can ask is ``how does the variance vary?'' This is equivalent to asking about the asymmetry of the the distribution or the \textbf{skewness}. The skewness comes from the idea of standardized moments (it's the 3rd standardized moment), and is defined as such
 \begin{equation}
 \label{eq:12}
 \text{Skewness: } <\left(\frac{X - \mu_XX}{\sigma_XX}\right)^{3}>
 \end{equation}
-You can take this one step further, and look at the 4th standardized moment (i.e., raise the quantity in Equation \ref{eq:12} to 4), we will have a measure of the ``tailedness'' of the distribution, called \textbf{kurtosis}.
+You can take this one step further, and look at the 4th standardized moment (i.e., raise the quantity in Equation \ref{eq:12} to 4), we will have a measure of the ``tailedness'' of the distribution, called \textbf{kurtosis}. Kurtosis can be used to interpret how prevalent extreme values are in a dataset. 
 
-Finally, you may recall talking about quartiles and quantiles in your previous statistic classes. A quantile is the more general definition, and it can be considered the cut point of a probability distribution into continuous intervals with the same probability. We can have a quantile for any percentage. The 25\% quantile is the first quartile, and it is the point where 25\% of the data lies ``below''. The 50\% quantile is the median, and 75\% quartile is the third quantiles. The space between the first and third quartiles is referred to as the interquartile range. 
+Finally, you may recall talking about quartiles and quantiles in your previous statistic classes. A quantile is the more general definition, and it can be considered the cut point of a probability distribution into continuous intervals with the same probability. We can have a quantile for any percentage. The 25\% quantile is the first quartile, and it is the point where 25\% of the data lies ``below''. The 50\% quantile is the median, and 75\% quartile is the third quartile. The space between the first and third quartiles is referred to as the interquartile range (IQR). 
 
 It is important to be cognizant of how extreme values (sometimes outliers) will affect these statistics. For a statistic like ``range'' (the difference between the maximum and minimum values of the dataset), it will be heavily impacted by extreme values. Mean and variance will be more impacted by extreme values than the median and interquartile range. 
 
@@ -209,20 +219,20 @@ For discrete sets, we can also look at the following statistics
 \end{itemize}
 
 \subsubsection{Ways to Talk About Two Distributions}
-If we are dealing with two distributions, we can ask if they are related to each other by looking at the correlation (how they are related) or the covariance (how they differ). I show these definitions in Equations \ref{eq:1} and \ref{eq:4}, where $\mu_Z$ denotes the mean of random variable $Z$ and $\sigma_Z$ denotes the standard deviation, and $<Z>$ represents taking the mean of whatever is between the brackets.
+If we are dealing with two distributions, we can assess the similarity in their statistics through the covariance, shown in Eq. \ref{eq:1}, where $\mu_Z$ denotes the mean of random variable $Z$, and the brackets $<>$ refer to taking a mean. Correlation is a similar statistic, but scaled by the standard deviation of both distributions. Oftentimes correlation will be used in time-series analysis to provide evidence for two variables being related to one another. 
 
 \begin{equation}
 \label{eq:1}
 \text{Covariance: } <\left(X - \mu_X \right) \left( Y - \mu_Y \right) >
 \end{equation}
+
+
 \begin{equation}
 \label{eq:4}
 \text{Correlation: } \frac{ <\left(X - \mu_X \right) \left( Y - \mu_Y \right) >}{\sigma_X\sigma_Y}
 \end{equation}
 
-As we see in the above equations, correlation is a scaled covariance. Sometimes you will hear it referred to as a Pearson correlation coefficient, of which there are a few mathematical definitions. It is also sometimes referred to as an r-value. Pearson correlation is most sensitive to linear relationships, and there are other measures of correlation that are more sensitive to nonlinear relationships. As correlations are not scaled, you should not compare correlation coefficients between datasets.
-
-Covariance, which is correlation scaled by standard deviation, ranges from -1 to +1, with -1 indicating perfect anticorrelation, 0 indicating independence, and +1 indicating perfect correlation. Covariance can be compared between datasets. 
+Covariances are not scaled, so they should not be compared between different sets of data. However, correlations are scaled, ranging from -1 to +1, with -1 indicating perfect anticorrelation, 0 indicating independence, and +1 indicating perfect correlation, and can be compared to each other. However, when assessing the significance of correlations, there are several important characteristics to keep track of, such as the autocorrelation, which can artificially inflate correlation significance (\href{https://www.sciencedirect.com/science/article/pii/S0012821X16306823#!}{Hu et al, 2017} has some dire warnings about this, especially for paleoclimate scientists).
 
 
 \subsection{Distribution Statistic Example: Average Daily Air Temperatures in Florida}
@@ -254,29 +264,24 @@ In the accompanying Jupyter Notebook, I walk through several ways to visualize t
 I also walk through calculating all the statistics we previously discuss, and come up with an interpretation of this dataset.
 
 \subsection{Normal Distribution and the Central Limit Theorem}
-``Normally distributed'' is a phrase that you'll hear a lot in statistics. The Normal Distribution, also referred to as the Gaussian (pronounced ``gau-see-an'') Distribution (or the bell-curve) refers to a distribution that takes the form
+``Normally distributed'' is a phrase that you'll hear a lot in statistics. Many statistical techniques, such as hypothesis testing, are primarily defined for normally distrbuted variables. The Normal Distribution, also referred to as the Gaussian (pronounced ``gau-see-an'') Distribution (or the bell-curve) refers to a distribution that takes the form
 
 \begin{equation}
 \label{eq:13}
 f(x) = \frac{1}{\sigma\sqrt{2\pi}}e^{-\frac{1}{2} \left( \frac{x - \mu}{\sigma} \right)^{2}}
 \end{equation}
 
-\clearpage
-Normal distributions are important because of two interrelated reasons
-\begin{enumerate}
-\item\label{item:3} Central Limit Theorem
-\item Many statistical techniques apply only to normally distributed variables
-\end{enumerate}
-
-What's the Central Limit Theorem? The Central Limit Theorem states that, for any random variable, with any distribution, the fluctuations between it's sample mean and population mean will become normally distributed, when scaled by the number of samples. It can be a little difficult to grasp the magnitude of this theorem, so I present it, step by step here. 
+See Figure \ref{fig:pdfvcdf} for an example of what the Normal Distribution looks like. Although many statistical techniques are only defined for normally distributed data, many types of data are not normally distributed. However, because of the Central Limit Theorem, we can still work with non-normally distributed data. The Central Limit Theorem states that, for any random variable, with any distribution, the fluctuations between its sample mean and population mean will become normally distributed, when scaled by the number of samples. It can be a little difficult to grasp the magnitude of this theorem, so I present it, step by step here. 
 
 First, let's assume we have some weird distribution, like a gamma distribution. This distribution is always positive, has its highest value at 0, and trails off from there. Definitely not a normal distribution! I show this in Figure \ref{fig:gamma}
+
 \begin{figure}[htbp]
 \centerline{\includegraphics[width = 0.5\textwidth]{gamma.png}}
 \caption[]{\label{fig:gamma} Histogram of 100 points taken from Gamma distribution}
 \end{figure}
 
 The law of large numbers says that, as we take progressively larger samples, the mean of any distribution will probably converge. For posterity, I demonstrate this in Figure \ref{fig:lawoflarge}, where I take progressively larger samples from our gamma distribution and calculate the mean.
+
 \begin{figure}[htbp]
 \centerline{\includegraphics[width = 0.5\textwidth]{lawoflarge.png}}
 \caption[]{\label{fig:lawoflarge} Demonstration of law of large numbers}
@@ -294,7 +299,7 @@ In Figure \ref{fig:clt}, I show the result of taking histograms of the distribut
 
 \begin{figure}[htbp]
 \centerline{\includegraphics[width = \textwidth]{clt.png}}
-\caption[]{\label{fig:clt} }
+\caption[]{\label{fig:clt} Fluctuation between sample mean and population mean for increasing number of samples. }
 \end{figure}
 
 \subsection{Hypothesis Testing}
@@ -324,8 +329,8 @@ Examples of test statistics include z-tests (commonly used in teaching because i
 t = \frac{\bar{x}-\mu_0}{\sigma / \sqrt{n}}
 \end{equation}
 
-\item Calculate $t$, and then map it on to a Student's t-distribution. Compute the probability, or p-value, by integrating to the extrema. Compare this to your level of significance (commonly, you want p $< 0.05$ to reject the null hypothesis).
-  
+\item Calculate $t$, and then map it on to a Student's t-distribution (a generalized form of the standard normal distribution that accounts for degrees of freedom). Compute the probability of getting this $t$ value if the null hypothesis were false (the p-value). This is done by integrating the Student's t-distribution PDF to the extrema. Compare this to your level of significance (commonly, you want p $< 0.05$ to reject the null hypothesis).
+ 
 \end{enumerate}  
 You will very rarely see this process laid out in papers. Oftentimes, people will just report the p-value. 
 
@@ -415,15 +420,21 @@ Now, recall that the scalar $J$ will be minimized when this derivative is equal 
 \label{eq:29}
 \mathbf{E}^T \vec{y} =  \mathbf{E}^T \mathbf{E}\vec{c}
 \end{equation}
-In linear algebra, we take the inverse instead of multiplying, so
+In linear algebra, we take the inverse instead of dividing through, so
 \begin{equation}
 \label{eq:30}
 ( \mathbf{E}^T \mathbf{E} ) ^{-1} \mathbf{E}^T \vec{y} = \vec{c}
 \end{equation}
 
-Although the calculus might be a little less intuitive, solving this via linear algebra can make it much easier to extend this calculation to propagate error, and it makes the relation clearer for higher order regression. It also is very fast and computationally efficient.
+We call the matrix that multiplies $\vec{y}$ the ``estimator'', $\mathbf{E}^{\dagger}$. If there is uncertainty associated with the measurements in $\vec{y}$, $\mathbf{E}^{\dagger}$ can be used to propagate a noise covariance matrix through our estimation process and produce a solution covariance matrix, which will give us uncertainty values for our estimates of $\vec{c}$.
 
-Let's quickly calculate the trend of our Tampa Bay temperature dataset. I show this calculation in the attached Jupyter Notebooks. In one very short, efficient line of code, I calculate both the slope and y-intercept in one fell swoop. Here's the result
+\begin{equation}
+\label{eq:31}
+\mathbf{C_{\tilde{c}\tilde{c}} = \mathbf{E^{\dagger}} C_{yy} \mathbf{E^{\dagger}}}^{T}
+\end{equation}
+Although the calculus might be a little less intuitive, this method is highly flexible and computationally efficient. 
+
+Let's quickly calculate the trend of our Tampa Bay temperature dataset. I show this calculation in the attached Jupyter Notebooks. In a few short, efficient lines of code, I calculate both the slope and y-intercept. Here's the result, showing an estimate of temperature at new $x$ points (every 0.75 days, starting from the beginning of the month and going for 40 days). 
 
 \begin{figure}[htbp]
 \centerline{\includegraphics[width = 0.75\textwidth]{regression.png}}
